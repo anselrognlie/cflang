@@ -9,9 +9,9 @@ def safe_index(arr, idx, default):
 
     return arr[idx]
 
-s = FilePushbackByteStream(safe_index(sys.argv, 1, "samples/token/literals.cf"))
-# s = FilePushbackByteStream("samples/token/int.cf")
-# s = FilePushbackByteStream("samples/token/string.cf")
+s = FilePushbackByteStream(safe_index(sys.argv, 1, "sample_data/cflang/token/literals.cflang"))
+# s = FilePushbackByteStream("samples/token/int.cflang")
+# s = FilePushbackByteStream("samples/token/string.cflang")
 # while not s.eos():
 #     print(s.next())
 
