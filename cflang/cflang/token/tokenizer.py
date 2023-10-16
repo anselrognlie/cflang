@@ -96,12 +96,29 @@ class Tokenizer:
         if self.stream.eos():
             return (True, '')
 
-        c = self.stream.next()
-        while self._is_whitespace(c):
-            self.location = self.stream.get_location()
-            if self.stream.eos():
-                return (True, '')
+        done = False
+        while not done:
+            if self._try_read("//"):
+                if self.stream.eos():
+                    return (True, '')
+                c = self.stream.next()
+                while c != "\n":
+                    if self.stream.eos():
+                        return (True, '')
+                    c = self.stream.next()
+                self.stream.pushback(c)
+                self.location = self.stream.get_location()
+                continue
+
             c = self.stream.next()
+            if self._is_whitespace(c):
+                self.location = self.stream.get_location()
+                if self.stream.eos():
+                    return (True, '')
+                continue
+
+            done = True
+
 
         return (False, c)
 
