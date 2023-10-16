@@ -106,7 +106,6 @@ class Tokenizer:
                     if self.stream.eos():
                         return (True, '')
                     c = self.stream.next()
-                self.stream.pushback(c)
                 self.location = self.stream.get_location()
                 continue
 
