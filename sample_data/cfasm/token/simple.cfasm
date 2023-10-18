@@ -2,7 +2,7 @@ main:
   push #3  ; load 3 onto stack
   push #2  ; load 2 onto stack
   add      ; add, result is on stack
-  pop result
+  ret
 
 
 abc: .ds "abc",0
