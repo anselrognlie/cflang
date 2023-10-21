@@ -1,6 +1,6 @@
-from enum import Enum
+from enum import IntEnum
 
-class Opcode(Enum):
+class Opcode(IntEnum):
     PUSHI = 1
     ADDI = 2
     RET = 3

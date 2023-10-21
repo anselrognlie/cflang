@@ -53,7 +53,7 @@ class StackMachine:
         self.pc = self.return_stack.pop()
 
     handlers = {
-        Opcode.PUSHI.value: _pushi,
-        Opcode.ADDI.value: _addi,
-        Opcode.RET.value: _ret,
+        Opcode.PUSHI: _pushi,
+        Opcode.ADDI: _addi,
+        Opcode.RET: _ret,
     }
