@@ -30,7 +30,7 @@ class StackMachine:
 
     def _read_dword(self):
         i = int.from_bytes(
-            bytearray([int.from_bytes(self.memory[self.pc + n]) for n in range(4)]),
+            bytearray(self.memory[self.pc + n] for n in range(4)),
             byteorder="little")
         self.pc += 4
         return i
