@@ -79,7 +79,7 @@ class StackMachine:
     def _set_flags_for_dword(self, n):
         mask = top_bit_mask(DWORD)
         negative = True if n & mask else False
-        zero = bool(n)
+        zero = not bool(n)
         self._set_flags(negative=negative, zero=zero)
 
     def _read_dword_pc(self):
@@ -126,6 +126,7 @@ class StackMachine:
     def _pushi(self):
         arg = self._read_dword_pc()
         self._push_dword_ds(arg)
+        self._set_flags_for_dword(arg)
 
     def _addi(self):
         arg2 = self._pop_dword_ds()
