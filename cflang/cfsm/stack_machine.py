@@ -176,13 +176,28 @@ class StackMachine:
         self.pc = self._pop_dword_rs()
 
     def _andi(self):
-        pass
+        arg2 = self._pop_dword_ds()
+        arg1 = self._pop_dword_ds()
+        result = arg2 & arg1
+        self._set_flags_for_dword(result)
+
+        self._push_dword_ds(result)
 
     def _ori(self):
-        pass
+        arg2 = self._pop_dword_ds()
+        arg1 = self._pop_dword_ds()
+        result = arg2 | arg1
+        self._set_flags_for_dword(result)
+
+        self._push_dword_ds(result)
 
     def _xori(self):
-        pass
+        arg2 = self._pop_dword_ds()
+        arg1 = self._pop_dword_ds()
+        result = arg2 ^ arg1
+        self._set_flags_for_dword(result)
+
+        self._push_dword_ds(result)
 
     def _nop(self):
         pass

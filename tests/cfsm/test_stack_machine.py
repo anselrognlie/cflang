@@ -118,7 +118,7 @@ def test_and_numbers():
 
 def test_or_numbers():
     reader = MemoryBinaryReader(
-       hex_str_to_int_array("01000000 ffffffff 01000000 0f0f0f0f 0b000000 03000000")
+       hex_str_to_int_array("01000000 ffffffff 01000000 0f0f0f0f 0c000000 03000000")
     )
 
     sm = StackMachine(reader)
@@ -132,7 +132,7 @@ def test_or_numbers():
 
 def test_xor_numbers():
     reader = MemoryBinaryReader(
-       hex_str_to_int_array("01000000 0f0f0f0f 01000000 ffffffff 0b000000 03000000")
+       hex_str_to_int_array("01000000 0f0f0f0f 01000000 ffffffff 0d000000 03000000")
     )
 
     sm = StackMachine(reader)
