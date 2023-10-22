@@ -9,3 +9,5 @@ class Opcode(IntEnum):
     BRK = 5
     STRI = 6
     FCHI = 7
+    TORSI = 8
+    OFRSI = 9

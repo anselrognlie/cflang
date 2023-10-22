@@ -56,9 +56,34 @@ def test_fetch_and_store():
     sm = StackMachine(reader)
     result = sm.run()
 
-    assert result == 1
+    assert result == 0
+    assert not sm.carry
+    assert not sm.zero  # even though the error code is 0, the last data op stored the
+    assert not sm.overflow
+    assert sm.negative
+    assert get_dword_from_mem(sm.memory, 32) == 0xffffffff
+
+def test_xfer_to_return():
+    reader = MemoryBinaryReader(
+       hex_str_to_int_array("01000000 ffffffff 08000000 09000000 03000000")
+    )
+
+    sm = StackMachine(reader)
+    sm.tick()  # push
+    sm.tick()  # to rs
+
+    assert sm.ds == sm.empty_ds
+    assert get_dword_from_mem(sm.memory, sm.rs) == 0xffffffff
+
+    sm.tick()  # from rs
+
+    assert sm.rs == sm.empty_rs
+    assert get_dword_from_mem(sm.memory, sm.ds) == 0xffffffff
+
+    result = sm.run()
+
+    assert result == 0xffffffff
     assert not sm.carry
     assert not sm.zero
     assert not sm.overflow
     assert sm.negative
-    assert get_dword_from_mem(sm.memory, 32) == 0xffffffff

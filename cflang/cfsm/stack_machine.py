@@ -37,6 +37,7 @@ class StackMachine:
         self.rs = mem_size - DWORD
         self.empty_rs = self.rs
         self.ds = self.rs - rs_size
+        self.empty_ds = self.ds
         self.stop = False
         self.overflow = False
         self.zero = True
@@ -128,6 +129,24 @@ class StackMachine:
         self._push_dword_ds(arg)
         self._set_flags_for_dword(arg)
 
+    def _fetchi(self):
+        loc = self._read_dword_pc()
+        arg = self._read_dword_mem(loc)
+        self._push_dword_ds(arg)
+        self._set_flags_for_dword(arg)
+
+    def _storei(self):
+        loc = self._read_dword_pc()
+        arg = self._pop_dword_ds()
+        self._write_dword_mem(loc, arg)
+        self._set_flags_for_dword(arg)
+
+    def _torsi(self):
+        pass
+
+    def _ofrsi(self):
+        pass
+
     def _addi(self):
         arg2 = self._pop_dword_ds()
         arg1 = self._pop_dword_ds()
@@ -160,4 +179,8 @@ class StackMachine:
         Opcode.SUBI: _subi,
         Opcode.RET: _ret,
         Opcode.NOP: _nop,
+        Opcode.FCHI: _fetchi,
+        Opcode.STRI: _storei,
+        Opcode.TORSI: _torsi,
+        Opcode.OFRSI: _ofrsi,
     }
