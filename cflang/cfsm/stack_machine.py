@@ -199,6 +199,15 @@ class StackMachine:
 
         self._push_dword_ds(result)
 
+    def _dupi(self):
+        pass
+
+    def _overi(self):
+        pass
+
+    def _swapi(self):
+        pass
+
     def _nop(self):
         pass
 
@@ -216,4 +225,7 @@ class StackMachine:
         Opcode.ANDI: _andi,
         Opcode.ORI: _ori,
         Opcode.XORI: _xori,
+        Opcode.DUPI: _dupi,
+        Opcode.OVERI: _overi,
+        Opcode.SWAPI: _swapi,
     }

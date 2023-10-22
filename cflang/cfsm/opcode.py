@@ -15,3 +15,6 @@ class Opcode(IntEnum):
     ANDI = 11
     ORI = 12
     XORI = 13
+    DUPI = 14
+    OVERI = 15
+    SWAPI = 16
