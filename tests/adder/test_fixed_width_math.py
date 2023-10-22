@@ -1,4 +1,4 @@
-from cflang.cfsm.stack_machine import FixedWidthAdder
+import cflang.cfsm.fixed_width_math as FixedWidthAdder
 
 def test_add_with_overflow():
     n1 = 0x7f

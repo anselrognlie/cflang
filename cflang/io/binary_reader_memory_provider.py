@@ -7,8 +7,9 @@ class BinaryReaderMemoryProvider(BinaryReaderProvider):
 
     def read(self):
         b = ''
-        if self.pos >= len(self.data):
-            b = self.data[self.pos]
+        if self.pos < len(self.data):
+            i = self.data[self.pos]
+            b = i.to_bytes(1)
             self.pos += 1
 
         return b
