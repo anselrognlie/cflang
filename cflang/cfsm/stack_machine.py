@@ -1,8 +1,6 @@
 from cflang.io.file_binary_reader import EndOfFileBinaryReader
 from .opcode import Opcode
 
-MAX_INT = 0xffffffff
-
 class WrapAroundAdder:
     def __init__(self, range):
         self.range = range
@@ -61,12 +59,12 @@ class StackMachine:
     def __init__(self, reader, mem_size=0x10000, rs_size=0x1000):
         self.reader = reader
         self.mem_size = mem_size
-        self.adder = WrapAroundAdder(mem_size)
         self.memory = [0] * self.mem_size
         self.reader.read_bytes(self.memory)
         self.pc = 0
-        self.rs = 0
-        self.ds = self.adder.sub(self.rs, rs_size)
+        self.rs = mem_size - 4
+        self.empty_rs = self.rs
+        self.ds = self.rs - rs_size
         self.stop = False
         self.overflow = False
 
@@ -105,14 +103,14 @@ class StackMachine:
 
     def _push_dword_reg(self, reg, n):
         addr = getattr(self, reg)
-        addr = self.adder.sub(addr, 4)
+        addr, _ = FixedWidthAdder.sub(4, addr, 4)
         setattr(self, reg, addr)
         self._write_dword_mem(addr, n)
 
     def _pop_dword_reg(self, reg):
         addr = getattr(self, reg)
         n = self._read_dword_mem(addr)
-        addr = self.adder.add(addr, 4)
+        addr, _ = FixedWidthAdder.add(4, addr, 4)
         setattr(self, reg, addr)
         return n
 
@@ -135,17 +133,12 @@ class StackMachine:
     def _addi(self):
         arg1 = self._pop_dword_ds()
         arg2 = self._pop_dword_ds()
-        if MAX_INT - arg1 < arg2:
-            self.overflow = True
-            result = arg1 - MAX_INT + arg2
-        else:
-            self.overflow = False
-            result = arg1 + arg2
+        result, self.overflow = FixedWidthAdder.add(4, arg1, arg2)
 
         self._push_dword_ds(result)
 
     def _ret(self):
-        if self.rs == 0:
+        if self.rs == self.empty_rs:
             self.stop = True
             return
 
