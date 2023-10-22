@@ -18,3 +18,6 @@ class Opcode(IntEnum):
     DUPI = 14
     OVERI = 15
     SWAPI = 16
+    JMP = 17
+    IF = 18
+    CALL = 19

@@ -219,6 +219,15 @@ class StackMachine:
 
         self._set_flags_for_dword(arg1)
 
+    def _jmp(self):
+        pass
+
+    def _if(self):
+        pass
+
+    def _call(self):
+        pass
+
     def _nop(self):
         pass
 
@@ -239,4 +248,7 @@ class StackMachine:
         Opcode.DUPI: _dupi,
         Opcode.OVERI: _overi,
         Opcode.SWAPI: _swapi,
+        Opcode.JMP: _jmp,
+        Opcode.IF: _if,
+        Opcode.CALL: _call,
     }

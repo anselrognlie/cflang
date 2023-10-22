@@ -22,8 +22,19 @@ def hex_chars_to_int(hex_chars):
 def hex_str_to_int_array(text):
     data = []
     byte = []
+    look_for_eol = False
+
     for n in text:
-        if n == ' ':
+        if look_for_eol:
+            if n == '\n':
+                look_for_eol = False
+            continue
+
+        if n in ' \n':
+            continue
+
+        if n == '#':
+            look_for_eol = True
             continue
 
         byte.append(n)

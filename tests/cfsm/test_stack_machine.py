@@ -194,3 +194,69 @@ def test_swap_value():
     assert sm.empty_ds - sm.ds == 2 * DWORD
     assert get_dword_from_mem(sm.memory, sm.ds) == 3
     assert get_dword_from_mem(sm.memory, sm.ds + DWORD) == 2
+
+def test_jmp_instruction():
+    reader = MemoryBinaryReader(
+       hex_str_to_int_array("01000000 03000000 11000000 18000000 01000000 02000000 03000000")
+    )
+
+    sm = StackMachine(reader)
+    result = sm.run()
+
+    assert result == 3
+    assert not sm.carry
+    assert not sm.zero
+    assert not sm.overflow
+    assert not sm.negative
+
+def test_if_instruction():
+    reader = MemoryBinaryReader(
+        hex_str_to_int_array(
+            """
+            01000000 01000000  # push 1
+            01000000 03000000 12000000 2c000000  # push 3, if 0->last line (push 2)
+            01000000 03000000 04000000 12000000 34000000  # push 3, sub, if 0->last line (ret)
+            01000000 02000000 03000000  # push 2, ret
+            """)
+    )
+
+    sm = StackMachine(reader)
+    result = sm.run()
+
+    assert result == 1
+    assert not sm.carry
+    assert sm.zero
+    assert not sm.overflow
+    assert not sm.negative
+
+
+def test_call_instruction():
+    reader = MemoryBinaryReader(
+        hex_str_to_int_array(
+            """
+            01000000 01000000  # push 1
+            01000000 01000000  # push 1
+            13000000 44000000  # call dec
+            06000000 3c000000  # store to result 1
+            01000000 0a000000  # push 1
+            13000000 44000000  # call dec
+            06000000 40000000  # store to result 2
+            03000000  # ret (end)
+            f0f0f0f0  # result 1 (60)
+            f0f0f0f0  # result 2 (64)
+            # dec routine (68)
+            01000000 01000000 04000000 03000000  # push 1, sub, ret
+            """)
+    )
+
+    sm = StackMachine(reader)
+    result = sm.run()
+
+    assert result == 1
+    assert not sm.carry
+    assert sm.zero
+    assert not sm.overflow
+    assert not sm.negative
+
+    assert get_dword_from_mem(sm.memory, 0x3c) == 0
+    assert get_dword_from_mem(sm.memory, 0x40) == 9
