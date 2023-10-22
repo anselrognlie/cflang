@@ -5,6 +5,12 @@ from .data_size import DWORD
 from . import fixed_width_math as fwm
 from .flag_result import ZERO, CARRY, OVERFLOW, NEGATIVE, ALL_FLAGS
 
+class InvalidOpcodeError(Exception):
+    def __init__(self, opcode, offset):
+        super().__init__(f'Invalid opcode [{hex(opcode)}] at location {hex(offset)}')
+        self.opcode = opcode
+        self.offset = offset
+
 class WrapAroundAdder:
     def __init__(self, range):
         self.range = range
@@ -47,12 +53,15 @@ class StackMachine:
         if self.stop:
             return
 
+        curr_pc = self.pc
         try:
             op = self._read_dword_pc()
             handler = StackMachine.handlers[op]
             handler(self)
         except EndOfFileBinaryReader:
-            pass
+            self.stop = True
+        except KeyError:
+            raise InvalidOpcodeError(opcode=op, offset=curr_pc)
 
     def _set_flags(self, overflow=None, zero=None, carry=None, negative=None):
         if overflow is not None:

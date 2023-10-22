@@ -2,10 +2,8 @@ class EndOfFileBinaryReader(Exception): pass
 
 class BinaryReader:
     def __init__(self, provider):
-        self.pos = 1
         self.buffer = None
         self.provider = provider
-        # self.bytes = None
 
     def read_dword(self):
         byte_data = bytearray(self.read_byte() for _ in range(4))
