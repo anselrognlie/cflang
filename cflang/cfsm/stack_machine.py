@@ -200,13 +200,24 @@ class StackMachine:
         self._push_dword_ds(result)
 
     def _dupi(self):
-        pass
+        arg = self._read_dword_mem(self.ds)
+        self._push_dword_ds(arg)
+
+        self._set_flags_for_dword(arg)
 
     def _overi(self):
-        pass
+        arg = self._read_dword_mem(self.ds + DWORD)
+        self._push_dword_ds(arg)
+
+        self._set_flags_for_dword(arg)
 
     def _swapi(self):
-        pass
+        arg2 = self._pop_dword_ds()
+        arg1 = self._pop_dword_ds()
+        self._push_dword_ds(arg2)
+        self._push_dword_ds(arg1)
+
+        self._set_flags_for_dword(arg1)
 
     def _nop(self):
         pass
