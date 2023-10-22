@@ -7,3 +7,5 @@ class Opcode(IntEnum):
     RET = 3
     SUBI = 4
     BRK = 5
+    STRI = 6
+    FCHI = 7

@@ -3,10 +3,10 @@ def hex_char_to_dec(hex_char):
         return ord(hex_char) - ord('0')
 
     if 'a' <= hex_char <= 'f':
-        return ord(hex_char) - ord('a')
+        return ord(hex_char) - ord('a') + 10
 
     if 'A' <= hex_char <= 'F':
-        return ord(hex_char) - ord('A')
+        return ord(hex_char) - ord('A') + 10
 
     raise ValueError
 
