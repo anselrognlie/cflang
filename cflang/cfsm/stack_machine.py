@@ -130,7 +130,7 @@ class StackMachine:
         self._set_flags_for_dword(arg)
 
     def _dropi(self):
-        pass
+        self._pop_dword_ds()
 
     def _fetchi(self):
         loc = self._read_dword_pc()
