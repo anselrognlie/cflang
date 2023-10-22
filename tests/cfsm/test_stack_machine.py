@@ -29,3 +29,17 @@ def test_sub_numbers():
     assert not sm.zero
     assert not sm.overflow
     assert not sm.negative
+
+def test_nop_in_code():
+    reader = MemoryBinaryReader(
+       hex_str_to_int_array("01000000 01000000 00000000 03000000")
+    )
+
+    sm = StackMachine(reader)
+    result = sm.run()
+
+    assert result == 1
+    assert not sm.carry
+    assert not sm.zero
+    assert not sm.overflow
+    assert not sm.negative

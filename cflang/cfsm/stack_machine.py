@@ -150,9 +150,13 @@ class StackMachine:
 
         self.pc = self._pop_dword_rs()
 
+    def _nop(self):
+        pass
+
     handlers = {
         Opcode.PUSHI: _pushi,
         Opcode.ADDI: _addi,
         Opcode.SUBI: _subi,
         Opcode.RET: _ret,
+        Opcode.NOP: _nop,
     }
