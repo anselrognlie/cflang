@@ -19,6 +19,44 @@ class WrapAroundAdder:
 
         return n % self.range
 
+class FixedWidthAdder:
+    @classmethod
+    def _make_mask(cls, n):
+        return 1 << n
+
+    @classmethod
+    def _top_bit_mask(cls, size):
+        return cls._make_mask((8 * size) - 1)
+
+    @classmethod
+    def add(cls, size, n1, n2):
+        max_usgn = 1 << size * 8
+
+        if max_usgn - n1 <= n2:
+            result = n1 - max_usgn + n2
+        else:
+            result = n1 + n2
+
+        mask = cls._top_bit_mask(size)
+        overflow = True if not n1 & mask and not n2 & mask and result & mask else False
+
+        return result, overflow
+
+    @classmethod
+    def sub(cls, size, n1, n2):
+        max_usgn = 1 << size * 8
+
+        if n1 < n2:
+            result = max_usgn - n2 + n1
+        else:
+            result = n1 - n2
+
+        mask = cls._top_bit_mask(size)
+        overflow = True if n1 & mask and not n2 & mask and not result & mask else False
+
+        return result, overflow
+
+
 class StackMachine:
     def __init__(self, reader, mem_size=0x10000, rs_size=0x1000):
         self.reader = reader
