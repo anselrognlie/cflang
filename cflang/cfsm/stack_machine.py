@@ -128,9 +128,17 @@ class StackMachine:
         self._push_dword_ds(arg)
 
     def _addi(self):
-        arg1 = self._pop_dword_ds()
         arg2 = self._pop_dword_ds()
+        arg1 = self._pop_dword_ds()
         result, flags = fwm.add(DWORD, arg1, arg2)
+        self._set_flags(**flags.select(ALL_FLAGS))
+
+        self._push_dword_ds(result)
+
+    def _subi(self):
+        arg2 = self._pop_dword_ds()
+        arg1 = self._pop_dword_ds()
+        result, flags = fwm.sub(DWORD, arg1, arg2)
         self._set_flags(**flags.select(ALL_FLAGS))
 
         self._push_dword_ds(result)
@@ -145,5 +153,6 @@ class StackMachine:
     handlers = {
         Opcode.PUSHI: _pushi,
         Opcode.ADDI: _addi,
+        Opcode.SUBI: _subi,
         Opcode.RET: _ret,
     }
