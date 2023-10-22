@@ -14,7 +14,7 @@ def add(size, n1, n2):
     mask = top_bit_mask(size)
     overflow = True if not n1 & mask and not n2 & mask and result & mask else False
     negative = True if result & mask else False
-    zero = bool(result)
+    zero = not bool(result)
 
     return result, FlagResult(zero=zero, negative=negative, carry=carry, overflow=overflow)
 
@@ -31,7 +31,7 @@ def sub(size, n1, n2):
     mask = top_bit_mask(size)
     overflow = True if n1 & mask and not n2 & mask and not result & mask else False
     negative = True if result & mask else False
-    zero = bool(result)
+    zero = not bool(result)
 
     return result, FlagResult(zero=zero, negative=negative, carry=carry, overflow=overflow)
 

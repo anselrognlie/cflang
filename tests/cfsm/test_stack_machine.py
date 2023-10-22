@@ -11,3 +11,7 @@ def test_add_numbers():
     result = sm.run()
 
     assert result == 5
+    assert not sm.carry
+    assert not sm.zero
+    assert not sm.overflow
+    assert not sm.negative
