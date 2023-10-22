@@ -175,6 +175,15 @@ class StackMachine:
 
         self.pc = self._pop_dword_rs()
 
+    def _andi(self):
+        pass
+
+    def _ori(self):
+        pass
+
+    def _xori(self):
+        pass
+
     def _nop(self):
         pass
 
@@ -189,4 +198,7 @@ class StackMachine:
         Opcode.TORSI: _torsi,
         Opcode.OFRSI: _ofrsi,
         Opcode.DROPI: _dropi,
+        Opcode.ANDI: _andi,
+        Opcode.ORI: _ori,
+        Opcode.XORI: _xori,
     }

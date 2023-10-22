@@ -101,3 +101,45 @@ def test_xfer_to_return():
     assert not sm.zero
     assert not sm.overflow
     assert sm.negative
+
+def test_and_numbers():
+    reader = MemoryBinaryReader(
+       hex_str_to_int_array("01000000 0f0f0f0f 01000000 ffffffff 0b000000 03000000")
+    )
+
+    sm = StackMachine(reader)
+    result = sm.run()
+
+    assert result == 0x0f0f0f0f
+    assert not sm.carry
+    assert not sm.zero
+    assert not sm.overflow
+    assert not sm.negative
+
+def test_or_numbers():
+    reader = MemoryBinaryReader(
+       hex_str_to_int_array("01000000 ffffffff 01000000 0f0f0f0f 0b000000 03000000")
+    )
+
+    sm = StackMachine(reader)
+    result = sm.run()
+
+    assert result == 0xffffffff
+    assert not sm.carry
+    assert not sm.zero
+    assert not sm.overflow
+    assert sm.negative
+
+def test_xor_numbers():
+    reader = MemoryBinaryReader(
+       hex_str_to_int_array("01000000 0f0f0f0f 01000000 ffffffff 0b000000 03000000")
+    )
+
+    sm = StackMachine(reader)
+    result = sm.run()
+
+    assert result == 0xf0f0f0f0
+    assert not sm.carry
+    assert not sm.zero
+    assert not sm.overflow
+    assert sm.negative

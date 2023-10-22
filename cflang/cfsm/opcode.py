@@ -12,3 +12,6 @@ class Opcode(IntEnum):
     TORSI = 8
     OFRSI = 9
     DROPI = 10
+    ANDI = 11
+    ORI = 12
+    XORI = 13
