@@ -48,7 +48,7 @@ class StackMachine:
         while not self.stop:
             self.tick()
 
-        return self.memory[self.ds]
+        return self._read_dword_mem(self.ds)
 
     def tick(self):
         if self.stop:
@@ -129,6 +129,9 @@ class StackMachine:
         self._push_dword_ds(arg)
         self._set_flags_for_dword(arg)
 
+    def _dropi(self):
+        pass
+
     def _fetchi(self):
         loc = self._read_dword_pc()
         arg = self._read_dword_mem(loc)
@@ -142,10 +145,12 @@ class StackMachine:
         self._set_flags_for_dword(arg)
 
     def _torsi(self):
-        pass
+        arg = self._pop_dword_ds()
+        self._push_dword_rs(arg)
 
     def _ofrsi(self):
-        pass
+        arg = self._pop_dword_rs()
+        self._push_dword_ds(arg)
 
     def _addi(self):
         arg2 = self._pop_dword_ds()
@@ -183,4 +188,5 @@ class StackMachine:
         Opcode.STRI: _storei,
         Opcode.TORSI: _torsi,
         Opcode.OFRSI: _ofrsi,
+        Opcode.DROPI: _dropi,
     }

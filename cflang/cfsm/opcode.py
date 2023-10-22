@@ -11,3 +11,4 @@ class Opcode(IntEnum):
     FCHI = 7
     TORSI = 8
     OFRSI = 9
+    DROPI = 10
