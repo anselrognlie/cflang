@@ -65,7 +65,17 @@ def test_nop_in_code():
 
 def test_fetch_and_store():
     reader = MemoryBinaryReader(
-       hex_str_to_int_array("01000000 00000000 07000000 1c000000 06000000 20000000 14000000 ffffffff")
+       hex_str_to_int_array(
+           """
+           01000000 00000000  # pushi 0
+           01000000 24000000  # pushi 0x1c
+           07000000           # fetchi
+           01000000 28000000  # pushi 0x20
+           06000000           # storei
+           14000000           # halt
+           ffffffff           # 0x24
+           00000000           # 0x28
+           """)
     )
 
     sm = StackMachine(reader)
@@ -76,7 +86,7 @@ def test_fetch_and_store():
     assert not sm.zero  # even though the error code is 0, the last data op stored the
     assert not sm.overflow
     assert sm.negative
-    assert get_dword_from_mem(sm.memory, 32) == 0xffffffff
+    assert get_dword_from_mem(sm.memory, 0x28) == 0xffffffff
 
 def test_and_numbers():
     reader = MemoryBinaryReader(
@@ -212,17 +222,19 @@ def test_call_instruction():
             """
             01000000 01000000  # push 1
             01000000 01000000  # push 1
-            01000000 4c000000  # push dec
+            01000000 54000000  # push dec
             13000000           # call dec
-            06000000 44000000  # store to result 1
+            01000000 4c000000  # push result 1
+            06000000           # store
             01000000 0a000000  # push 1
-            01000000 4c000000  # push dec
+            01000000 54000000  # push dec
             13000000           # call dec
-            06000000 48000000  # store to result 2
+            01000000 50000000  # push result 2
+            06000000           # store to result 2
             14000000  # halt
-            f0f0f0f0  # result 1 (44)
-            f0f0f0f0  # result 2 (48)
-            # dec routine (4c)
+            f0f0f0f0  # result 1 (4c)
+            f0f0f0f0  # result 2 (50)
+            # dec routine (54)
             10000000           # swap
             01000000 01000000  # push 1
             04000000           # sub
@@ -240,5 +252,5 @@ def test_call_instruction():
     assert not sm.overflow
     assert not sm.negative
 
-    assert get_dword_from_mem(sm.memory, 0x44) == 0
-    assert get_dword_from_mem(sm.memory, 0x48) == 9
+    assert get_dword_from_mem(sm.memory, 0x4c) == 0
+    assert get_dword_from_mem(sm.memory, 0x50) == 9

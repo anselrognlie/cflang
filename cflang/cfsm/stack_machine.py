@@ -125,13 +125,13 @@ class StackMachine:
         self._pop_dword_sp()
 
     def _fetchi(self):
-        loc = self._read_dword_pc()
+        loc = self._pop_dword_sp()
         arg = self._read_dword_mem(loc)
         self._push_dword_sp(arg)
         self._set_flags_for_dword(arg)
 
     def _storei(self):
-        loc = self._read_dword_pc()
+        loc = self._pop_dword_sp()
         arg = self._pop_dword_sp()
         self._write_dword_mem(loc, arg)
         self._set_flags_for_dword(arg)
