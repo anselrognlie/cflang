@@ -9,8 +9,8 @@ class Opcode(IntEnum):
     BRK = 5
     STRI = 6
     FCHI = 7
-    # SKIP = 8
-    # SKIP = 9
+    PUSHR = 8
+    POPR = 9
     DROPI = 10
     ANDI = 11
     ORI = 12
@@ -22,5 +22,3 @@ class Opcode(IntEnum):
     IF = 18
     CALL = 19
     HALT = 20
-    PUSHR = 21
-    POPR = 22

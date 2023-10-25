@@ -260,9 +260,9 @@ def test_reg_ops():
         hex_str_to_int_array(
             """
             01000000 01000000  # pushi 1
-            15000000  # push sp
-            16000001  # pop bp
-            15000002  # push pc
+            08000000  # push sp
+            09000001  # pop bp
+            08000002  # push pc
             14000000  # halt
             """
         )
