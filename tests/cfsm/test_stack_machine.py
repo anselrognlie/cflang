@@ -9,7 +9,7 @@ def get_dword_from_mem(mem, addr):
 
 def test_push_and_drop():
     reader = MemoryBinaryReader(
-       hex_str_to_int_array("01000000 03000000 01000000 02000000 0a000000 03000000")
+       hex_str_to_int_array("01000000 03000000 01000000 02000000 0a000000 14000000")
     )
 
     sm = StackMachine(reader)
@@ -23,7 +23,7 @@ def test_push_and_drop():
 
 def test_add_numbers():
     reader = MemoryBinaryReader(
-       hex_str_to_int_array("01000000 03000000 01000000 02000000 02000000 03000000")
+       hex_str_to_int_array("01000000 03000000 01000000 02000000 02000000 14000000")
     )
 
     sm = StackMachine(reader)
@@ -37,7 +37,7 @@ def test_add_numbers():
 
 def test_sub_numbers():
     reader = MemoryBinaryReader(
-       hex_str_to_int_array("01000000 03000000 01000000 02000000 04000000 03000000")
+       hex_str_to_int_array("01000000 03000000 01000000 02000000 04000000 14000000")
     )
 
     sm = StackMachine(reader)
@@ -51,7 +51,7 @@ def test_sub_numbers():
 
 def test_nop_in_code():
     reader = MemoryBinaryReader(
-       hex_str_to_int_array("01000000 01000000 00000000 03000000")
+       hex_str_to_int_array("01000000 01000000 00000000 14000000")
     )
 
     sm = StackMachine(reader)
@@ -65,7 +65,7 @@ def test_nop_in_code():
 
 def test_fetch_and_store():
     reader = MemoryBinaryReader(
-       hex_str_to_int_array("01000000 00000000 07000000 1c000000 06000000 20000000 03000000 ffffffff")
+       hex_str_to_int_array("01000000 00000000 07000000 1c000000 06000000 20000000 14000000 ffffffff")
     )
 
     sm = StackMachine(reader)
@@ -78,34 +78,9 @@ def test_fetch_and_store():
     assert sm.negative
     assert get_dword_from_mem(sm.memory, 32) == 0xffffffff
 
-def test_xfer_to_return():
-    reader = MemoryBinaryReader(
-       hex_str_to_int_array("01000000 ffffffff 08000000 09000000 03000000")
-    )
-
-    sm = StackMachine(reader)
-    sm.tick()  # push
-    sm.tick()  # to rs
-
-    assert sm.ds == sm.empty_ds
-    assert get_dword_from_mem(sm.memory, sm.rs) == 0xffffffff
-
-    sm.tick()  # from rs
-
-    assert sm.rs == sm.empty_rs
-    assert get_dword_from_mem(sm.memory, sm.ds) == 0xffffffff
-
-    result = sm.run()
-
-    assert result == 0xffffffff
-    assert not sm.carry
-    assert not sm.zero
-    assert not sm.overflow
-    assert sm.negative
-
 def test_and_numbers():
     reader = MemoryBinaryReader(
-       hex_str_to_int_array("01000000 0f0f0f0f 01000000 ffffffff 0b000000 03000000")
+       hex_str_to_int_array("01000000 0f0f0f0f 01000000 ffffffff 0b000000 14000000")
     )
 
     sm = StackMachine(reader)
@@ -119,7 +94,7 @@ def test_and_numbers():
 
 def test_or_numbers():
     reader = MemoryBinaryReader(
-       hex_str_to_int_array("01000000 ffffffff 01000000 0f0f0f0f 0c000000 03000000")
+       hex_str_to_int_array("01000000 ffffffff 01000000 0f0f0f0f 0c000000 14000000")
     )
 
     sm = StackMachine(reader)
@@ -133,7 +108,7 @@ def test_or_numbers():
 
 def test_xor_numbers():
     reader = MemoryBinaryReader(
-       hex_str_to_int_array("01000000 0f0f0f0f 01000000 ffffffff 0d000000 03000000")
+       hex_str_to_int_array("01000000 0f0f0f0f 01000000 ffffffff 0d000000 14000000")
     )
 
     sm = StackMachine(reader)
@@ -147,7 +122,7 @@ def test_xor_numbers():
 
 def test_dup_value():
     reader = MemoryBinaryReader(
-       hex_str_to_int_array("01000000 03000000 0e000000 03000000")
+       hex_str_to_int_array("01000000 03000000 0e000000 14000000")
     )
 
     sm = StackMachine(reader)
@@ -162,7 +137,7 @@ def test_dup_value():
 
 def test_over_value():
     reader = MemoryBinaryReader(
-       hex_str_to_int_array("01000000 03000000 01000000 02000000 0f000000 03000000")
+       hex_str_to_int_array("01000000 03000000 01000000 02000000 0f000000 14000000")
     )
 
     sm = StackMachine(reader)
@@ -180,7 +155,7 @@ def test_over_value():
 
 def test_swap_value():
     reader = MemoryBinaryReader(
-       hex_str_to_int_array("01000000 03000000 01000000 02000000 10000000 03000000")
+       hex_str_to_int_array("01000000 03000000 01000000 02000000 10000000 14000000")
     )
 
     sm = StackMachine(reader)
@@ -197,7 +172,7 @@ def test_swap_value():
 
 def test_jmp_instruction():
     reader = MemoryBinaryReader(
-       hex_str_to_int_array("01000000 03000000 11000000 18000000 01000000 02000000 03000000")
+       hex_str_to_int_array("01000000 03000000 11000000 18000000 01000000 02000000 14000000")
     )
 
     sm = StackMachine(reader)
@@ -214,9 +189,10 @@ def test_if_instruction():
         hex_str_to_int_array(
             """
             01000000 01000000  # push 1
-            01000000 03000000 12000000 2c000000  # push 3, if 0->last line (push 2)
-            01000000 03000000 04000000 12000000 34000000  # push 3, sub, if 0->last line (ret)
-            01000000 02000000 03000000  # push 2, ret
+            01000000 03000000 0e000000  # push 3, dup
+            12000000 30000000  # if 0->last line (push 2)
+            01000000 03000000 04000000 12000000 38000000  # push 3, sub, if 0->last line (ret)
+            01000000 02000000 14000000  # push 2, ret
             """)
     )
 
@@ -236,16 +212,22 @@ def test_call_instruction():
             """
             01000000 01000000  # push 1
             01000000 01000000  # push 1
-            13000000 44000000  # call dec
-            06000000 3c000000  # store to result 1
+            01000000 4c000000  # push dec
+            13000000           # call dec
+            06000000 44000000  # store to result 1
             01000000 0a000000  # push 1
-            13000000 44000000  # call dec
-            06000000 40000000  # store to result 2
-            03000000  # ret (end)
-            f0f0f0f0  # result 1 (60)
-            f0f0f0f0  # result 2 (64)
-            # dec routine (68)
-            01000000 01000000 04000000 03000000  # push 1, sub, ret
+            01000000 4c000000  # push dec
+            13000000           # call dec
+            06000000 48000000  # store to result 2
+            14000000  # halt
+            f0f0f0f0  # result 1 (44)
+            f0f0f0f0  # result 2 (48)
+            # dec routine (4c)
+            10000000           # swap
+            01000000 01000000  # push 1
+            04000000           # sub
+            10000000           # swap
+            03000000           # ret
             """)
     )
 
@@ -254,9 +236,9 @@ def test_call_instruction():
 
     assert result == 1
     assert not sm.carry
-    assert sm.zero
+    assert not sm.zero
     assert not sm.overflow
     assert not sm.negative
 
-    assert get_dword_from_mem(sm.memory, 0x3c) == 0
-    assert get_dword_from_mem(sm.memory, 0x40) == 9
+    assert get_dword_from_mem(sm.memory, 0x44) == 0
+    assert get_dword_from_mem(sm.memory, 0x48) == 9

@@ -28,15 +28,13 @@ class WrapAroundAdder:
         return n % self.range
 
 class StackMachine:
-    def __init__(self, reader, mem_size=0x10000, rs_size=0x1000):
+    def __init__(self, reader, mem_size=0x10000):
         self.reader = reader
         self.mem_size = mem_size
         self.memory = [0] * self.mem_size
         self.reader.read_bytes(self.memory)
         self.pc = 0
-        self.rs = mem_size - DWORD
-        self.empty_rs = self.rs
-        self.ds = self.rs - rs_size
+        self.ds = mem_size - DWORD
         self.empty_ds = self.ds
         self.stop = False
         self.overflow = False
@@ -118,12 +116,6 @@ class StackMachine:
     def _pop_dword_ds(self):
         return self._pop_dword_reg('ds')
 
-    def _push_dword_rs(self, n):
-        self._push_dword_reg('rs', n)
-
-    def _pop_dword_rs(self):
-        return self._pop_dword_reg('rs')
-
     def _pushi(self):
         arg = self._read_dword_pc()
         self._push_dword_ds(arg)
@@ -144,14 +136,6 @@ class StackMachine:
         self._write_dword_mem(loc, arg)
         self._set_flags_for_dword(arg)
 
-    def _torsi(self):
-        arg = self._pop_dword_ds()
-        self._push_dword_rs(arg)
-
-    def _ofrsi(self):
-        arg = self._pop_dword_rs()
-        self._push_dword_ds(arg)
-
     def _addi(self):
         arg2 = self._pop_dword_ds()
         arg1 = self._pop_dword_ds()
@@ -168,12 +152,11 @@ class StackMachine:
 
         self._push_dword_ds(result)
 
-    def _ret(self):
-        if self.rs == self.empty_rs:
-            self.stop = True
-            return
+    def _halt(self):
+        self.stop = True
 
-        self.pc = self._pop_dword_rs()
+    def _ret(self):
+        self.pc = self._pop_dword_ds()
 
     def _andi(self):
         arg2 = self._pop_dword_ds()
@@ -220,13 +203,19 @@ class StackMachine:
         self._set_flags_for_dword(arg1)
 
     def _jmp(self):
-        pass
+        addr = self._read_dword_pc()
+        self.pc = addr
 
     def _if(self):
-        pass
+        arg = self._pop_dword_ds()
+        addr = self._read_dword_pc()
+        if arg == 0:
+            self.pc = addr
 
     def _call(self):
-        pass
+        addr = self._pop_dword_ds()
+        self._push_dword_ds(self.pc)
+        self.pc = addr
 
     def _nop(self):
         pass
@@ -239,8 +228,6 @@ class StackMachine:
         Opcode.NOP: _nop,
         Opcode.FCHI: _fetchi,
         Opcode.STRI: _storei,
-        Opcode.TORSI: _torsi,
-        Opcode.OFRSI: _ofrsi,
         Opcode.DROPI: _dropi,
         Opcode.ANDI: _andi,
         Opcode.ORI: _ori,
@@ -251,4 +238,5 @@ class StackMachine:
         Opcode.JMP: _jmp,
         Opcode.IF: _if,
         Opcode.CALL: _call,
+        Opcode.HALT: _halt,
     }
