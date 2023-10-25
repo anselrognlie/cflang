@@ -254,3 +254,36 @@ def test_call_instruction():
 
     assert get_dword_from_mem(sm.memory, 0x4c) == 0
     assert get_dword_from_mem(sm.memory, 0x50) == 9
+
+def test_reg_ops():
+    reader = MemoryBinaryReader(
+        hex_str_to_int_array(
+            """
+            01000000 01000000  # pushi 1
+            15000000  # push sp
+            16000001  # pop bp
+            15000002  # push pc
+            14000000  # halt
+            """
+        )
+    )
+
+    sm = StackMachine(reader)
+    result = sm.run()
+
+    # assert
+    assert result == 20
+    assert sm.bp == 0xfff8
+
+# def test_sample():
+#     reader = MemoryBinaryReader(
+#         hex_str_to_int_array(
+#             """
+#             """
+#         )
+#     )
+
+#     sm = StackMachine(reader)
+#     result = sm.run()
+
+#     # assert

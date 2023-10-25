@@ -22,3 +22,5 @@ class Opcode(IntEnum):
     IF = 18
     CALL = 19
     HALT = 20
+    PUSHR = 21
+    POPR = 22

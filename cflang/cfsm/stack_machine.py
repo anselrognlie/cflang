@@ -33,7 +33,9 @@ class StackMachine:
         self.mem_size = mem_size
         self.memory = [0] * self.mem_size
         self.reader.read_bytes(self.memory)
+        self.op = 0
         self.pc = 0
+        self.bp = 0
         self.sp = mem_size - DWORD
         self.empty_sp = self.sp
         self.stop = False
@@ -54,7 +56,8 @@ class StackMachine:
 
         curr_pc = self.pc
         try:
-            op = self._read_dword_pc()
+            self.op = self._read_dword_pc()
+            op = self.op & 0xff
             handler = StackMachine.handlers[op]
             handler(self)
         except EndOfFileBinaryReader:
@@ -123,6 +126,24 @@ class StackMachine:
 
     def _dropi(self):
         self._pop_dword_sp()
+
+    def _get_reg_from_op(self):
+        reg_id = (self.op & 0xff000000) >> 24
+        return self.registers[reg_id]
+
+    def _pushr(self):
+        reg = self._get_reg_from_op()
+
+        arg = getattr(self, reg)
+        self._push_dword_sp(arg)
+        self._set_flags_for_dword(arg)
+
+    def _popr(self):
+        reg = self._get_reg_from_op()
+
+        arg = self._pop_dword_sp()
+        self._set_flags_for_dword(arg)
+        setattr(self, reg, arg)
 
     def _fetchi(self):
         loc = self._pop_dword_sp()
@@ -239,4 +260,12 @@ class StackMachine:
         Opcode.IF: _if,
         Opcode.CALL: _call,
         Opcode.HALT: _halt,
+        Opcode.PUSHR: _pushr,
+        Opcode.POPR: _popr,
+    }
+
+    registers = {
+        0: 'sp',
+        1: 'bp',
+        2: 'pc',
     }
