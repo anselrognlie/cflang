@@ -226,7 +226,7 @@ def test_call_instruction():
             13000000           # call dec
             01000000 4c000000  # push result 1
             06000000           # store
-            01000000 0a000000  # push 1
+            01000000 0a000000  # push 10
             01000000 54000000  # push dec
             13000000           # call dec
             01000000 50000000  # push result 2
@@ -274,6 +274,55 @@ def test_reg_ops():
     # assert
     assert result == 20
     assert sm.bp == 0xfff8
+
+def test_call_using_bp_instruction():
+    reader = MemoryBinaryReader(
+        hex_str_to_int_array(
+            """
+            01000000 01000000  # push 1
+            01000000 01000000  # push 1
+            01000000 64000000  # push dec
+            13000000           # call dec
+            10000000           # swap
+            0a000000           # drop input
+            01000000 5c000000  # push result 1
+            06000000           # store
+            01000000 0a000000  # push 10
+            01000000 64000000  # push dec
+            13000000           # call dec
+            10000000           # swap
+            0a000000           # drop input
+            01000000 60000000  # push result 2
+            06000000           # store to result 2
+            14000000  # halt
+            f0f0f0f0  # result 1 (5c)
+            f0f0f0f0  # result 2 (60)
+            # dec routine (64)
+            08000000           # push sp
+            09000001           # pop bp
+            08000001           # push bp
+            01000000 04000000
+            02000000           # bp+4
+            07000000           # fetchi bp+4
+            01000000 01000000  # push 1
+            04000000           # sub
+            10000000           # swap
+            03000000           # ret
+            """)
+    )
+
+    sm = StackMachine(reader)
+    result = sm.run()
+
+    assert result == 1
+    assert not sm.carry
+    assert not sm.zero
+    assert not sm.overflow
+    assert not sm.negative
+
+    assert get_dword_from_mem(sm.memory, 0x5c) == 0
+    assert get_dword_from_mem(sm.memory, 0x60) == 9
+
 
 # def test_sample():
 #     reader = MemoryBinaryReader(
