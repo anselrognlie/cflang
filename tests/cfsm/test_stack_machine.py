@@ -133,7 +133,7 @@ def test_dup_value():
     assert not sm.zero
     assert not sm.overflow
     assert not sm.negative
-    assert sm.empty_ds - sm.ds == 2 * DWORD
+    assert sm.empty_sp - sm.sp == 2 * DWORD
 
 def test_over_value():
     reader = MemoryBinaryReader(
@@ -148,10 +148,10 @@ def test_over_value():
     assert not sm.zero
     assert not sm.overflow
     assert not sm.negative
-    assert sm.empty_ds - sm.ds == 3 * DWORD
-    assert get_dword_from_mem(sm.memory, sm.ds) == 3
-    assert get_dword_from_mem(sm.memory, sm.ds + DWORD) == 2
-    assert get_dword_from_mem(sm.memory, sm.ds + DWORD * 2) == 3
+    assert sm.empty_sp - sm.sp == 3 * DWORD
+    assert get_dword_from_mem(sm.memory, sm.sp) == 3
+    assert get_dword_from_mem(sm.memory, sm.sp + DWORD) == 2
+    assert get_dword_from_mem(sm.memory, sm.sp + DWORD * 2) == 3
 
 def test_swap_value():
     reader = MemoryBinaryReader(
@@ -166,9 +166,9 @@ def test_swap_value():
     assert not sm.zero
     assert not sm.overflow
     assert not sm.negative
-    assert sm.empty_ds - sm.ds == 2 * DWORD
-    assert get_dword_from_mem(sm.memory, sm.ds) == 3
-    assert get_dword_from_mem(sm.memory, sm.ds + DWORD) == 2
+    assert sm.empty_sp - sm.sp == 2 * DWORD
+    assert get_dword_from_mem(sm.memory, sm.sp) == 3
+    assert get_dword_from_mem(sm.memory, sm.sp + DWORD) == 2
 
 def test_jmp_instruction():
     reader = MemoryBinaryReader(

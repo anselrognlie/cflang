@@ -34,8 +34,8 @@ class StackMachine:
         self.memory = [0] * self.mem_size
         self.reader.read_bytes(self.memory)
         self.pc = 0
-        self.ds = mem_size - DWORD
-        self.empty_ds = self.ds
+        self.sp = mem_size - DWORD
+        self.empty_sp = self.sp
         self.stop = False
         self.overflow = False
         self.zero = True
@@ -46,7 +46,7 @@ class StackMachine:
         while not self.stop:
             self.tick()
 
-        return self._read_dword_mem(self.ds)
+        return self._read_dword_mem(self.sp)
 
     def tick(self):
         if self.stop:
@@ -110,95 +110,95 @@ class StackMachine:
         setattr(self, reg, addr)
         return n
 
-    def _push_dword_ds(self, n):
-        self._push_dword_reg('ds', n)
+    def _push_dword_sp(self, n):
+        self._push_dword_reg('sp', n)
 
-    def _pop_dword_ds(self):
-        return self._pop_dword_reg('ds')
+    def _pop_dword_sp(self):
+        return self._pop_dword_reg('sp')
 
     def _pushi(self):
         arg = self._read_dword_pc()
-        self._push_dword_ds(arg)
+        self._push_dword_sp(arg)
         self._set_flags_for_dword(arg)
 
     def _dropi(self):
-        self._pop_dword_ds()
+        self._pop_dword_sp()
 
     def _fetchi(self):
         loc = self._read_dword_pc()
         arg = self._read_dword_mem(loc)
-        self._push_dword_ds(arg)
+        self._push_dword_sp(arg)
         self._set_flags_for_dword(arg)
 
     def _storei(self):
         loc = self._read_dword_pc()
-        arg = self._pop_dword_ds()
+        arg = self._pop_dword_sp()
         self._write_dword_mem(loc, arg)
         self._set_flags_for_dword(arg)
 
     def _addi(self):
-        arg2 = self._pop_dword_ds()
-        arg1 = self._pop_dword_ds()
+        arg2 = self._pop_dword_sp()
+        arg1 = self._pop_dword_sp()
         result, flags = fwm.add(DWORD, arg1, arg2)
         self._set_flags(**flags.select(ALL_FLAGS))
 
-        self._push_dword_ds(result)
+        self._push_dword_sp(result)
 
     def _subi(self):
-        arg2 = self._pop_dword_ds()
-        arg1 = self._pop_dword_ds()
+        arg2 = self._pop_dword_sp()
+        arg1 = self._pop_dword_sp()
         result, flags = fwm.sub(DWORD, arg1, arg2)
         self._set_flags(**flags.select(ALL_FLAGS))
 
-        self._push_dword_ds(result)
+        self._push_dword_sp(result)
 
     def _halt(self):
         self.stop = True
 
     def _ret(self):
-        self.pc = self._pop_dword_ds()
+        self.pc = self._pop_dword_sp()
 
     def _andi(self):
-        arg2 = self._pop_dword_ds()
-        arg1 = self._pop_dword_ds()
+        arg2 = self._pop_dword_sp()
+        arg1 = self._pop_dword_sp()
         result = arg2 & arg1
         self._set_flags_for_dword(result)
 
-        self._push_dword_ds(result)
+        self._push_dword_sp(result)
 
     def _ori(self):
-        arg2 = self._pop_dword_ds()
-        arg1 = self._pop_dword_ds()
+        arg2 = self._pop_dword_sp()
+        arg1 = self._pop_dword_sp()
         result = arg2 | arg1
         self._set_flags_for_dword(result)
 
-        self._push_dword_ds(result)
+        self._push_dword_sp(result)
 
     def _xori(self):
-        arg2 = self._pop_dword_ds()
-        arg1 = self._pop_dword_ds()
+        arg2 = self._pop_dword_sp()
+        arg1 = self._pop_dword_sp()
         result = arg2 ^ arg1
         self._set_flags_for_dword(result)
 
-        self._push_dword_ds(result)
+        self._push_dword_sp(result)
 
     def _dupi(self):
-        arg = self._read_dword_mem(self.ds)
-        self._push_dword_ds(arg)
+        arg = self._read_dword_mem(self.sp)
+        self._push_dword_sp(arg)
 
         self._set_flags_for_dword(arg)
 
     def _overi(self):
-        arg = self._read_dword_mem(self.ds + DWORD)
-        self._push_dword_ds(arg)
+        arg = self._read_dword_mem(self.sp + DWORD)
+        self._push_dword_sp(arg)
 
         self._set_flags_for_dword(arg)
 
     def _swapi(self):
-        arg2 = self._pop_dword_ds()
-        arg1 = self._pop_dword_ds()
-        self._push_dword_ds(arg2)
-        self._push_dword_ds(arg1)
+        arg2 = self._pop_dword_sp()
+        arg1 = self._pop_dword_sp()
+        self._push_dword_sp(arg2)
+        self._push_dword_sp(arg1)
 
         self._set_flags_for_dword(arg1)
 
@@ -207,14 +207,14 @@ class StackMachine:
         self.pc = addr
 
     def _if(self):
-        arg = self._pop_dword_ds()
+        arg = self._pop_dword_sp()
         addr = self._read_dword_pc()
         if arg == 0:
             self.pc = addr
 
     def _call(self):
-        addr = self._pop_dword_ds()
-        self._push_dword_ds(self.pc)
+        addr = self._pop_dword_sp()
+        self._push_dword_sp(self.pc)
         self.pc = addr
 
     def _nop(self):
